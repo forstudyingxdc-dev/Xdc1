@@ -100,6 +100,7 @@ async function openHorror(answer) {
   const frontCam = document.getElementById("frontCam");
 
   photoBox.style.display = "none";
+  horrorVideo.classList.remove("fullscreen-done");
   label.textContent = `Son suala cavabınız: ${answer}`;
   camInfo.textContent = "Ön kamera hazırlanır...";
 
@@ -109,6 +110,12 @@ async function openHorror(answer) {
     horrorVideo.muted = true;
     horrorVideo.play().catch(() => {});
   });
+
+  if (horrorVideo.requestFullscreen) {
+    horrorVideo.requestFullscreen().catch(() => {});
+  } else if (horrorVideo.webkitRequestFullscreen) {
+    horrorVideo.webkitRequestFullscreen();
+  }
 
   stopCameraStream();
   clearTimeout(snapTimer);
@@ -139,6 +146,7 @@ function takeSnapshot(videoEl, answer) {
   const photoBox = document.getElementById("photoResultBox");
   const capturedPhoto = document.getElementById("capturedPhoto");
   const camInfo = document.getElementById("camInfo");
+  const horrorVideo = document.getElementById("horrorVideo");
 
   canvas.width = videoEl.videoWidth || 640;
   canvas.height = videoEl.videoHeight || 480;
@@ -151,6 +159,16 @@ function takeSnapshot(videoEl, answer) {
   capturedPhoto.src = imageDataUrl;
   photoBox.style.display = "block";
   camInfo.textContent = "Şəkil çəkildi və Memory bölməsində 3 günlük saxlanıldı.";
+
+  if (horrorVideo) {
+    horrorVideo.classList.add("fullscreen-done");
+  }
+
+  if (document.fullscreenElement && document.exitFullscreen) {
+    document.exitFullscreen().catch(() => {});
+  } else if (document.webkitFullscreenElement && document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  }
 
   const record = {
     id: "img_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
@@ -271,3 +289,4 @@ function escapeHtml(str) {
 }
 
 getActiveMemory();
+      
